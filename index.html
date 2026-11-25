@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questionnaire</title>
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--tx:#1a1a1f;--mu:#6b6b76;--ac:#5b4bdb;--bd:#e4e4ea;--er:#c0392b;--ok:#1e8e5a}
+@media (prefers-color-scheme:dark){:root{--bg:#121216;--card:#1b1b22;--tx:#ececf1;--mu:#9a9aa6;--ac:#8b7dff;--bd:#2c2c36;--er:#ff7b6b;--ok:#4cd698}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:680px;margin:0 auto;padding:20px 16px 60px}
+.bar{height:6px;background:var(--bd);border-radius:9px;overflow:hidden;margin:8px 0 4px}.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .4s}
+.meta{color:var(--mu);font-size:13px;display:flex;justify-content:space-between}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:22px;margin-top:16px;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:1.25rem;margin:0 0 12px}.q{font-size:1.1rem;font-weight:600;margin:0 0 16px}
+.opt{border:1px solid var(--bd);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.opt.sel{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac)}
+.row{display:flex;gap:10px;align-items:flex-start;padding:12px;cursor:pointer}
+.row input{margin-top:5px;accent-color:var(--ac)}.row span{flex:1}
+.vi{background:none;border:0;border-top:1px solid var(--bd);width:100%;text-align:left;padding:8px 12px;color:var(--ac);font:inherit;font-size:14px;cursor:pointer}
+.imp{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:14px;color:var(--mu);padding:0 12px;background:var(--bg)}
+.imp.open{max-height:300px;padding:10px 12px}.imp b{color:var(--tx)}
+button.p{background:var(--ac);color:#fff;border:0;border-radius:12px;padding:12px 22px;font:inherit;font-weight:600;cursor:pointer;margin-top:8px}
+button.p:disabled{opacity:.45;cursor:not-allowed}button.s{background:none;border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:12px 22px;font:inherit;cursor:pointer;margin:8px 8px 0 0}
+.err{color:var(--er);font-size:14px;margin-top:10px}.note{color:var(--mu);font-size:13px;margin-top:12px}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid #fff6;border-top-color:#fff;border-radius:50%;animation:r .7s linear infinite;vertical-align:-2px;margin-right:8px}@keyframes r{to{transform:rotate(360deg)}}
+.hide{display:none}.t{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd)}
+</style>
+</head>
+<body><main>
+<div id="top" class="hide"><div class="meta"><span id="pl"></span><span id="ps"></span></div><div class="bar"><i id="pb"></i></div></div>
+<div id="app"></div>
+</main>
+<script>
+/* ===== CONFIG ===== */
+const ENDPOINT = "https://formboost.app/f/oiztncjj"; // your FormBoost form. See notes: confirm it accepts JSON POSTs + CORS.
+const QUESTIONS = [{"id": "q01", "number": 1, "text": "You’re on the couch after dinner. He pulls you into his lap so you can feel how hard he already is. He kisses your neck and asks what you want him to do to you tonight.", "options": [{"id": "A", "text": "Soft kissing, slow undressing, and making love facing each other", "label": "Normal", "implication": "You crave deep emotional heat wrapped in tenderness — the kind of woman who melts when she’s truly desired."}, {"id": "B", "text": "Him talking dirty while he fingers you open until you’re soaking", "label": "Kinky", "implication": "Your body responds hard to filthy words. You’re the type who gets dripping wet just from being told what she’s becoming."}, {"id": "C", "text": "Him bending you over the arm of the couch and fucking you hard while calling you his good little slut", "label": "Slutty", "implication": "Something inside you lights up when you’re taken and claimed. You secretly love being used like you belong to him."}, {"id": "D", "text": "Him making you ride him while he slaps your ass and tells you to bounce harder", "label": "Whore", "implication": "You get off on being directed and degraded. Being told how to move for his pleasure turns you on more than you’d normally admit."}]}, {"id": "q02", "number": 2, "text": "He’s got you on your knees. His cock is right in front of your lips. He waits.", "options": [{"id": "A", "text": "You kiss and lick it gently, looking up at him the whole time", "label": "Normal", "implication": "You turn oral into something intimate and almost reverent. You love the power of making him weak with softness."}, {"id": "B", "text": "You take him deep, let yourself gag a little, and keep going", "label": "Kinky", "implication": "You enjoy the messy surrender of it. There’s a part of you that gets wet from being used like this."}, {"id": "C", "text": "You beg him to hold your head and properly fuck your throat", "label": "Slutty", "implication": "You don’t just tolerate rough oral — you crave being taken that way. Your throat wants to be claimed."}, {"id": "D", "text": "You ask him to talk filth while you choke on him", "label": "Whore", "implication": "Degradation mixed with oral is a real trigger for you. Being called filthy while your mouth is full makes you ache."}]}, {"id": "q03", "number": 3, "text": "He has you bent over the bed. He rubs the head of his cock against your wet pussy and asks how you want it.", "options": [{"id": "A", "text": "Slow and deep so you can feel every inch", "label": "Normal", "implication": "You want to be filled with intention. Depth and control make you feel completely taken."}, {"id": "B", "text": "Hard and fast while he pulls your hair", "label": "Kinky", "implication": "Your body answers to roughness. Hair-pulling and raw force switch something on inside you."}, {"id": "C", "text": "Him sliding in and then staying still so you have to push back onto him", "label": "Intensely Kinky", "implication": "You like being made to work for it. There’s a naughty satisfaction in having to fuck yourself back onto his cock."}, {"id": "D", "text": "Him alternating between your pussy and ass in the same session", "label": "Slutty", "implication": "You want both of your holes claimed in one night. The idea of being fully used that way already has your pulse racing."}]}, {"id": "q04", "number": 4, "text": "You’re riding him. He grips your hips and says he wants to watch you fall apart on his cock.", "options": [{"id": "A", "text": "You keep eye contact and cum while telling him how good he feels", "label": "Normal", "implication": "Orgasm is deeper for you when it’s shared and seen. You need that intimate connection at the peak."}, {"id": "B", "text": "You start talking dirty, telling him how stretched and full you feel", "label": "Kinky", "implication": "You get high from describing your own pleasure out loud. Filthy self-awareness turns you on."}, {"id": "C", "text": "You ask him to slap your ass and tits while you bounce", "label": "Slutty", "implication": "Impact while you’re on top makes everything sharper. You like your pleasure mixed with a little sting."}, {"id": "D", "text": "You beg him to flip you over and finish by fucking you senseless", "label": "Whore", "implication": "Part of you wants the control taken away at the end. Being overpowered after riding him feels complete."}]}, {"id": "q05", "number": 5, "text": "He pins your wrists above your head and looks you in the eye. “I’m going to use you tonight.” What do you want that to mean?", "options": [{"id": "A", "text": "Passionate, deep strokes while he tells you how much he wants you", "label": "Normal", "implication": "You want ownership that still feels like worship. Being wanted this intensely is your aphrodisiac."}, {"id": "B", "text": "Hard fucking while he calls you his dirty little fucktoy", "label": "Slutty", "implication": "Being reduced to his toy lights a fire in you. You crave that objectifying heat."}, {"id": "C", "text": "Him holding you down and making you take it even when you squirm", "label": "Rape-loving slut", "implication": "The fantasy of being overpowered (while still safe) runs deep. Resistance that gets ignored turns you on hard."}, {"id": "D", "text": "Him edging you for a long time before he finally lets you cum", "label": "Intensely Kinky", "implication": "You ache for orgasm control. Being kept desperate and needy is its own kind of pleasure."}]}, {"id": "q06", "number": 6, "text": "You’re in the shower together. He turns you to face the wall and presses against you.", "options": [{"id": "A", "text": "Slow, deep thrusts while he kisses your shoulder", "label": "Normal", "implication": "Even quick, steamy sex still needs tenderness for you. Connection never fully leaves the room."}, {"id": "B", "text": "Hard and fast with one hand on your throat", "label": "Kinky", "implication": "Rough control in the shower switches you on fast. A firm hand on your throat makes everything more intense."}, {"id": "C", "text": "Him spreading you and working a finger into your ass while he fucks your pussy", "label": "Intensely Kinky", "implication": "You like having both holes acknowledged at once. That dual attention makes you feel thoroughly claimed."}, {"id": "D", "text": "Him making you beg out loud before he gives you his cock", "label": "Slutty", "implication": "Being made to ask for it out loud is hot. Your own desperate voice turns you on."}]}, {"id": "q07", "number": 7, "text": "He tells you he wants to try anal tonight. How do you want it to go?", "options": [{"id": "A", "text": "Lots of lube, slow pressure, constant checking that you’re okay", "label": "Normal", "implication": "You’re open, but only when you feel completely safe and cared for. Trust is the real lubricant."}, {"id": "B", "text": "Him steadily pushing in while calling you his tight little ass slut", "label": "Slutty", "implication": "Dirty talk during the stretch makes it hotter. Being named that way while he takes your ass lights you up."}, {"id": "C", "text": "Him holding you down and making you take the whole thing once the head is in", "label": "Rape-loving slut", "implication": "Once it starts, you want to be made to accept it. That edge of forced surrender is what you secretly crave."}, {"id": "D", "text": "Him fucking your ass while reaching around to rub your clit so you cum with him inside", "label": "Intensely Kinky", "implication": "You want anal to end in your orgasm. Being forced to cum while full is a powerful fantasy."}]}, {"id": "q08", "number": 8, "text": "You’re both very turned on. He casually asks if you’ve ever thought about being with more than one person at the same time.", "options": [{"id": "A", "text": "The idea is hot to talk about but you wouldn’t actually do it", "label": "Normal", "implication": "The fantasy lives safely in your head — and even there it already gets you wet."}, {"id": "B", "text": "You’d try a threesome if it was with another woman and him", "label": "Kinky", "implication": "Soft, female-centered sharing feels safer and still deeply erotic to you."}, {"id": "C", "text": "You want two men focused only on you", "label": "Slutty", "implication": "Being the sole center of male attention is a real hunger. You want to be overwhelmed."}, {"id": "D", "text": "You want to be properly used by two people at once — filled and passed between them", "label": "Whore", "implication": "Full group use is not just a fantasy. Something in you already wants to be shared that completely."}]}, {"id": "q09", "number": 9, "text": "He has you on your back, legs pushed back. He looks down at where he’s about to enter you.", "options": [{"id": "A", "text": "He goes slow and watches your face the whole time", "label": "Normal", "implication": "Being watched while you’re taken makes the pleasure deeper. Your face tells the truth."}, {"id": "B", "text": "He pushes in hard and starts fucking you deep right away", "label": "Kinky", "implication": "You don’t need a long warm-up. You want to be entered like he already owns the right."}, {"id": "C", "text": "He spits on your pussy first and then slides in", "label": "Slutty", "implication": "That small filthy gesture does something to you. Being marked before he’s even inside turns you on."}, {"id": "D", "text": "He makes you hold your legs open wider so he can watch everything", "label": "Intensely Kinky", "implication": "Being displayed and examined while vulnerable is a quiet but strong kink of yours."}]}, {"id": "q10", "number": 10, "text": "You’re on all fours. He grabs a handful of your hair and pulls your head back.", "options": [{"id": "A", "text": "He fucks you with steady, deep strokes while praising how good you feel", "label": "Normal", "implication": "Rough position + genuine praise is your perfect mix. You want to feel both used and valued."}, {"id": "B", "text": "He uses your hair as a handle and pounds you while calling you a slut", "label": "Slutty", "implication": "Hair-pulling and degradation together hit a sweet spot. You like being handled that way."}, {"id": "C", "text": "He spanks you hard between thrusts until your ass is burning", "label": "Intensely Kinky", "implication": "Pain layered on top of pleasure makes everything sharper for you."}, {"id": "D", "text": "He pulls out and makes you turn around so he can fuck your mouth next", "label": "Whore", "implication": "Being moved between holes like a toy feels natural and exciting to you."}]}, {"id": "q11", "number": 11, "text": "He’s very thick tonight and warns you it might stretch you more than usual.", "options": [{"id": "A", "text": "You’re nervous but trust him to go slow", "label": "Normal", "implication": "Size still makes you a little shy, but the trust you feel is its own turn-on."}, {"id": "B", "text": "You get wetter and tell him you want to feel every inch", "label": "Kinky", "implication": "Your body already wants the stretch. You’re hungry for that full, intense feeling."}, {"id": "C", "text": "You ask him to force it in and make you take it", "label": "Rape-loving slut", "implication": "The idea of being made to accept something big wakes something primal in you."}, {"id": "D", "text": "You want him to keep going until you’re gaping and throbbing afterward", "label": "Slutty", "implication": "You don’t just want the stretch — you want the aftermath. Feeling it the next day is part of the pleasure."}]}, {"id": "q12", "number": 12, "text": "He wants to role-play. Tonight you’re the shy new employee and he’s the boss who stays late.", "options": [{"id": "A", "text": "Flirty tension that turns into passionate desk sex", "label": "Normal", "implication": "You like power-play that still ends in real heat and connection."}, {"id": "B", "text": "Him making you bend over the desk and taking what he wants", "label": "Kinky", "implication": "The non-negotiable dominance in the role turns you on more than the story itself."}, {"id": "C", "text": "Him talking down to you the entire time, making you thank him", "label": "Slutty", "implication": "Verbal humiliation inside a role-play is a real trigger for you."}, {"id": "D", "text": "Him using your mouth first as “payment” before he fucks you", "label": "Whore", "implication": "Transactional, slightly degrading oral in character feels deliciously wrong (and right)."}]}, {"id": "q13", "number": 13, "text": "You’re tied lightly to the headboard. He has full access.", "options": [{"id": "A", "text": "He teases you for a long time, making you beg nicely", "label": "Kinky", "implication": "You love being kept on the edge. Begging feels natural when you’re restrained."}, {"id": "B", "text": "He uses your mouth, pussy, and ass however he wants", "label": "Slutty", "implication": "Being a restrained set of holes for him is a deep fantasy."}, {"id": "C", "text": "He edges you over and over, slapping your pussy when you get close", "label": "Intensely Kinky", "implication": "Orgasm control mixed with light pain is highly addictive for you."}, {"id": "D", "text": "He leaves you tied and needy while he goes to get a drink, making you wait", "label": "Whore", "implication": "The psychological side of helplessness turns you on as much as the physical."}]}, {"id": "q14", "number": 14, "text": "After a long session he is still hard. He asks if you’d ever let another person join while you’re already messy and used.", "options": [{"id": "A", "text": "No — you only want him", "label": "Normal", "implication": "Even in fantasy, you stay exclusive. Your desire is focused and loyal."}, {"id": "B", "text": "Maybe another woman who focuses on you while he watches", "label": "Kinky", "implication": "Soft female attention under his gaze feels safer and still very hot."}, {"id": "C", "text": "Yes, another man who can use you while you’re still full of cum", "label": "Slutty", "implication": "Being passed on while messy is a live fantasy. The idea already affects you."}, {"id": "D", "text": "You want two people on you at once right now", "label": "Whore", "implication": "You’re not just open to group use — part of you is already hungry for it."}]}, {"id": "q15", "number": 15, "text": "He’s behind you, one hand on your throat, the other between your legs.", "options": [{"id": "A", "text": "He keeps the pressure light and focuses on making you cum", "label": "Normal", "implication": "Control in service of your pleasure is ideal. You still want the orgasm to be yours."}, {"id": "B", "text": "He squeezes just enough to make your head swim while he fingers you", "label": "Kinky", "implication": "That floaty, slightly dangerous feeling mixed with pleasure is addictive."}, {"id": "C", "text": "He calls you his property while he owns your pussy with his hand", "label": "Slutty", "implication": "Ownership language during physical control hits you hard."}, {"id": "D", "text": "He makes you edge until you’re shaking before he lets you finish", "label": "Intensely Kinky", "implication": "Prolonged denial under his hand is exactly what your body wants."}]}, {"id": "q16", "number": 16, "text": "You wake up to him already hard and pressed against you.", "options": [{"id": "A", "text": "Soft, sleepy morning sex while he holds you", "label": "Normal", "implication": "Even unexpected sex still needs gentleness and warmth for you."}, {"id": "B", "text": "Him sliding into your wet pussy from behind without much talk", "label": "Kinky", "implication": "Being taken while half-asleep feels natural and deeply erotic."}, {"id": "C", "text": "Him telling you to open your mouth so he can use your throat first", "label": "Slutty", "implication": "Waking up already being used orally is a quiet fantasy of yours."}, {"id": "D", "text": "Him pinning you down and fucking you properly awake", "label": "Rape-loving slut", "implication": "Being roughly woken up and taken switches you on fast."}]}, {"id": "q17", "number": 17, "text": "He has two of your toys out and a bottle of lube.", "options": [{"id": "A", "text": "You’d rather just have him tonight — no toys", "label": "Normal", "implication": "You prefer the real thing. His body is still the main event."}, {"id": "B", "text": "You want the thick toy in your pussy while he fucks your mouth", "label": "Kinky", "implication": "Being filled at both ends at once is a strong desire."}, {"id": "C", "text": "You want him to stretch your ass with a toy while he fucks your pussy", "label": "Intensely Kinky", "implication": "Double penetration (even with a toy) is something you actively want."}, {"id": "D", "text": "You want him to use the toys to edge you until you’re desperate and shaking", "label": "Slutty", "implication": "Toy-based orgasm control and forced desperation turn you on hard."}]}, {"id": "q18", "number": 18, "text": "He’s fucking you deep and suddenly slows down, staying buried inside you.", "options": [{"id": "A", "text": "He kisses you and tells you how perfect you feel", "label": "Normal", "implication": "Emotional intimacy mid-sex still matters deeply to you."}, {"id": "B", "text": "He tells you to squeeze and milk his cock like a good girl", "label": "Kinky", "implication": "Being instructed and praised for slutty effort turns you on."}, {"id": "C", "text": "He starts talking about how he’s going to fill you and make you drip", "label": "Slutty", "implication": "Breeding / cum talk is a strong trigger for you."}, {"id": "D", "text": "He pulls out and makes you beg before he gives it back", "label": "Whore", "implication": "Denial and forced begging mid-act excite you more than continuous fucking."}]}, {"id": "q19", "number": 19, "text": "You’re both watching porn together. A scene with two men and one woman comes on. He asks what you think.", "options": [{"id": "A", "text": "It’s hot to watch but you wouldn’t want it in real life", "label": "Normal", "implication": "Group content stays safely in fantasy — and even there it already affects you."}, {"id": "B", "text": "You’d try it if everyone was respectful and focused on you", "label": "Kinky", "implication": "Controlled, caring group sex is something you could actually consider."}, {"id": "C", "text": "You want to be the woman in the middle, used by both", "label": "Slutty", "implication": "Being the focus of two men is an active desire, not just a passing thought."}, {"id": "D", "text": "You want it rougher and filthier than the video", "label": "Whore", "implication": "Extreme group use is the real fantasy living under the surface."}]}, {"id": "q20", "number": 20, "text": "He tells you to get on the bed and present yourself however you want to be fucked.", "options": [{"id": "A", "text": "On your back, legs open, looking at him", "label": "Normal", "implication": "Face-to-face connection is still your preferred way to be taken."}, {"id": "B", "text": "On all fours, ass up, ready for him to take", "label": "Kinky", "implication": "Being presented like an offering already turns you on."}, {"id": "C", "text": "On your back with your legs pushed up so he can go as deep as possible", "label": "Intensely Kinky", "implication": "Depth and being folded open are what your body wants."}, {"id": "D", "text": "Face down, ass up, hands spreading yourself for him", "label": "Slutty", "implication": "Full display and deliberate submission are the goal."}]}];
+const LS = "qsess.v1";
+
+/* ===== STATE (persisted for recovery) ===== */
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random().toString(16).slice(2));
+let S = JSON.parse(localStorage.getItem(LS) || "null") || {sid:uid(), consent:false, done:[], answers:{}, pending:null, shared:false};
+const save = () => localStorage.setItem(LS, JSON.stringify(S));
+let cur=null, busy=false;
+const $ = id => document.getElementById(id), app=$("app");
+const nextIdx = () => QUESTIONS.findIndex(q => !S.done.includes(q.id));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ===== TRANSPORT ===== */
+async function post(payload){
+  const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),15000);
+  try{
+    const r=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(payload),signal:ctl.signal});
+    if(!r.ok) throw new Error("Server responded "+r.status);
+    let j=null; try{j=await r.json()}catch(e){}
+    if(j && (j.success===false || j.ok===false || j.error)) throw new Error("Server rejected submission");
+    return true;
+  } finally{clearTimeout(to)}
+}
+
+/* ===== SCREENS ===== */
+function progress(){const n=S.done.length,t=QUESTIONS.length;$("top").classList.remove("hide");$("pl").textContent=n>=t?"Complete":"Question "+(n+1)+" of "+t;$("ps").textContent=Math.round(n/t*100)+"%";$("pb").style.width=n/t*100+"%"}
+
+function intro(){
+  $("top").classList.add("hide");
+  app.innerHTML=`<div class="card"><h1>Adults-only questionnaire</h1>
+  <p>This questionnaire contains sexually explicit language and is for adults (18+) only.</p>
+  <p>Your answers and how you interact with the page (which options you open, how long you view them, any answer changes and timing) are collected and analysed. Each question is sent to the form owner when you press Next. You cannot go back to or change a submitted question.</p>
+  <label class="row" style="padding:0"><input type="checkbox" id="c"><span>I am 18 or older and I agree to the collection and analysis of my answers and interaction data.</span></label>
+  <button class="p" id="go" disabled>Begin</button></div>`;
+  $("c").onchange=e=>$("go").disabled=!e.target.checked;
+  $("go").onclick=()=>{S.consent=true;save();route()};
+}
+
+function route(){
+  if(!S.consent) return intro();
+  const i=nextIdx(); if(i<0) return finish(); show(i);
+}
+
+function show(i){
+  const q=QUESTIONS[i]; progress();
+  cur={q,selected:null,changes:[],order:0,opens:{},t0:performance.now(),started:new Date().toISOString(),submitting:false};
+  app.innerHTML=`<div class="card" id="qc"><p class="q">${esc(q.text)}</p><div id="opts"></div>
+   <button class="p" id="nx" disabled>Next</button><div class="err" id="er" role="alert"></div>
+   <div class="note">Answers can't be changed after you press Next.</div></div>`;
+  $("opts").innerHTML=q.options.map(o=>`<div class="opt" data-o="${o.id}">
+    <label class="row"><input type="radio" name="a" value="${o.id}"><span><b>${o.id})</b> ${esc(o.text)}</span></label>
+    <button class="vi" data-v="${o.id}" aria-expanded="false">View Implications</button>
+    <div class="imp" id="imp-${o.id}"><b>${esc(o.label)}:</b> ${esc(o.implication)}</div></div>`).join("");
+  document.querySelectorAll("input[name=a]").forEach(r=>r.onchange=()=>pick(r.value));
+  document.querySelectorAll(".vi").forEach(b=>b.onclick=()=>toggle(b.dataset.v));
+  $("nx").onclick=next;
+}
+
+function pick(id){
+  if(cur.submitting) return;
+  if(cur.selected!==id) cur.changes.push({from:cur.selected,to:id,at_ms:Math.round(performance.now()-cur.t0)});
+  cur.selected=id;
+  document.querySelectorAll(".opt").forEach(e=>e.classList.toggle("sel",e.dataset.o===id));
+  $("nx").disabled=false;
+}
+
+function toggle(id){
+  if(cur.submitting) return;
+  const o=cur.opens[id]||(cur.opens[id]={order:null,count:0,total_ms:0,since:null,first_at_ms:null});
+  const el=$("imp-"+id),btn=document.querySelector(`[data-v=${id}]`);
+  if(o.since===null){ // open
+    o.since=performance.now(); o.count++;
+    if(o.order===null){o.order=++cur.order;o.first_at_ms=Math.round(o.since-cur.t0)}
+    el.classList.add("open");btn.setAttribute("aria-expanded","true");btn.textContent="Hide Implications";
+  } else {close(id)}
+}
+function close(id){
+  const o=cur.opens[id]; if(!o||o.since===null) return;
+  o.total_ms+=Math.round(performance.now()-o.since);o.since=null;
+  $("imp-"+id).classList.remove("open");
+  const b=document.querySelector(`[data-v=${id}]`);b.setAttribute("aria-expanded","false");b.textContent="View Implications";
+}
+document.addEventListener("visibilitychange",()=>{ // pause timers while tab hidden
+  if(!cur||cur.submitting) return;
+  Object.entries(cur.opens).forEach(([id,o])=>{
+    if(document.hidden&&o.since!==null){o.total_ms+=Math.round(performance.now()-o.since);o.since=null;o.paused=true}
+    else if(!document.hidden&&o.paused){o.since=performance.now();o.paused=false}
+  });
+});
+
+function buildPayload(){
+  const end=performance.now(); Object.keys(cur.opens).forEach(id=>{const o=cur.opens[id];if(o.since!==null){o.total_ms+=Math.round(end-o.since);o.since=null}});
+  const views=Object.entries(cur.opens).map(([id,o])=>({option:id,open_order:o.order,times_opened:o.count,total_view_ms:o.total_ms,first_opened_at_ms:o.first_at_ms})).sort((a,b)=>a.open_order-b.open_order);
+  return {submission_id:S.sid+":"+cur.q.id,session_id:S.sid,question_id:cur.q.id,question_number:cur.q.number,type:"question",
+    selected_answer:cur.selected,answer_changes:JSON.stringify(cur.changes),implications_viewed:JSON.stringify(views),
+    view_order:views.map(v=>v.option).join(","),completion_ms:Math.round(end-cur.t0),started_at:cur.started,submitted_at:new Date().toISOString(),user_agent:navigator.userAgent};
+}
+
+async function next(){
+  if(busy||!cur||!cur.selected) return; busy=true; cur.submitting=true;
+  const btn=$("nx"); btn.disabled=true; btn.innerHTML='<span class="sp"></span>Submitting…'; $("er").textContent="";
+  document.querySelectorAll("input,.vi").forEach(e=>e.disabled=true);
+  const qid=cur.q.id;
+  if(!S.pending||S.pending.question_id!==qid){S.pending=buildPayload();save()} // freeze payload; retries reuse same submission_id
+  try{
+    await post(S.pending);
+    S.done.push(qid);S.answers[qid]=S.pending.selected_answer;S.pending=null;save(); // acknowledged → irreversible
+    busy=false; route();
+  }catch(e){
+    busy=false; btn.disabled=false; btn.textContent="Retry";
+    $("er").textContent="Couldn't confirm delivery ("+(e.name==="AbortError"?"timed out":e.message)+"). Your answer is kept — press Retry.";
+  }
+}
+
+/* ===== COMPLETION ===== */
+function finish(){
+  progress(); cur=null;
+  app.innerHTML=`<div class="card"><h1>All done</h1><p>Thank you. Every answer has been recorded.</p>
+   <button class="s" id="vr">View results</button><button class="s" id="sh" ${S.shared?"disabled":""}>${S.shared?"Shared with forum":"Share results with the forum"}</button>
+   <div id="res"></div><div class="err" id="er"></div><div class="note">Sharing is optional and only happens if you press the button.</div></div>`;
+  $("vr").onclick=results; $("sh").onclick=share;
+}
+function tally(){const c={};QUESTIONS.forEach(q=>{const o=q.options.find(o=>o.id===S.answers[q.id]);if(o)c[o.label]=(c[o.label]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1])}
+function results(){const t=tally();$("res").innerHTML=`<p style="margin-top:16px"><b>Your profile: ${esc(t[0]?t[0][0]:"—")}</b></p>`+t.map(([k,v])=>`<div class="t"><span>${esc(k)}</span><span>${v}</span></div>`).join("")}
+async function share(){
+  const b=$("sh");b.disabled=true;b.textContent="Sharing…";$("er").textContent="";
+  try{await post({submission_id:S.sid+":share",session_id:S.sid,type:"forum_share",consented_to_share:true,results:JSON.stringify(tally()),submitted_at:new Date().toISOString()});
+    S.shared=true;save();b.textContent="Shared with forum"}
+  catch(e){b.disabled=false;b.textContent="Retry sharing";$("er").textContent="Sharing failed: "+e.message}
+}
+route();
+</script>
+</body></html>
